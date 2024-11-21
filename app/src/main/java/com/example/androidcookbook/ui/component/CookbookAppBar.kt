@@ -30,7 +30,10 @@ import com.example.androidcookbook.ui.theme.Typography
 fun CookbookAppBar(
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false,
+    onCreatePostClick: () -> Unit = {},
     searchButtonAction: () -> Unit = {},
+    onMenuButtonClick: () -> Unit = {},
+    onBackButtonClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 ) {
     TopAppBar(
@@ -38,7 +41,7 @@ fun CookbookAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF7F5346),
             scrolledContainerColor = Color(0xFF7F5346)
-        ),       
+        ),
         title = {
             Text(
                 text = "Cookbook",
@@ -48,22 +51,20 @@ fun CookbookAppBar(
         actions = {
             Box(modifier = Modifier.padding(end = 6.dp)) {
                 IconButton(
-                    onClick = {},
+                    onClick = onCreatePostClick,
                     modifier = Modifier.size(30.dp),
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = Color(0xFFE8E8E8)
                     )
-
                 ) {
                     Image(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(R.drawable.plus),
-                        contentDescription = "Menu Button",
+                        contentDescription = "Create Post",
                         contentScale = ContentScale.Crop
 
                     )
                 }
-
             }
 
             Box(modifier = Modifier.padding(end = 6.dp)) {
@@ -74,55 +75,47 @@ fun CookbookAppBar(
                     Image(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.search_interface_symbol),
-                        contentDescription = "Menu Button",
+                        contentDescription = "Search",
                         contentScale = ContentScale.Crop
-
                     )
                 }
-
             }
 
             Box(modifier = Modifier.padding(end = 6.dp)) {
                 IconButton(
-                    onClick = {},
+                    onClick = onMenuButtonClick,
                     modifier = Modifier.size(30.dp),
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = Color(0xFFE8E8E8)
                     )
-
                 ) {
                     Image(
                         modifier = Modifier.size(16.dp),
                         painter = painterResource(R.drawable.hamburger),
                         contentDescription = "Menu Button",
                         contentScale = ContentScale.Crop
-
                     )
                 }
-
             }
-
-
         },
         navigationIcon = {
             if (showBackButton) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = onBackButtonClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back Button",
                         tint = Color.White
                     )
                 }
-            } else null
+            }
         },
         scrollBehavior = scrollBehavior
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun topAppBarPreview() {
+fun TopAppBarPreview() {
     CookbookAppBar()
 }

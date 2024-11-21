@@ -1,17 +1,13 @@
 package com.example.androidcookbook.ui.screen
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,9 +16,9 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +40,6 @@ import com.example.androidcookbook.ui.theme.Typography
 import com.example.androidcookbook.ui.uistate.CategoryUiState
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun CategoryScreen(modifier: Modifier = Modifier, categoryUiState: CategoryUiState) {
     when (categoryUiState) {
@@ -54,7 +49,7 @@ fun CategoryScreen(modifier: Modifier = Modifier, categoryUiState: CategoryUiSta
                 categories = categoryUiState.categories,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .padding(start = 8.dp, top = 16.dp, end = 8.dp)
             )
         }
 
@@ -76,25 +71,23 @@ fun RandomMeal(modifier: Modifier = Modifier, randomMeals: List<Category>) {
 
     LazyRow(
         state = listState,
-        modifier = modifier
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier,
     ) {
         items(items = randomMeals) { randomMeal ->
-
             Box(
                 modifier = Modifier
-                    .padding(8.dp)
                     .width(300.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CategoryCard(
                     category = randomMeal,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
                 )
             }
         }
     }
 }
-
 
 @Composable
 fun CategoryCard(category: Category, modifier: Modifier = Modifier) {
@@ -119,7 +112,7 @@ fun CategoryCard(category: Category, modifier: Modifier = Modifier) {
                     .crossfade(true)
                     .build(),
                 contentDescription = null,
-                contentScale = ContentScale.FillWidth,
+                contentScale = ContentScale.Crop,
                 error = painterResource(id = R.drawable.ic_broken_image),
                 placeholder = painterResource(id = R.drawable.loading_img)
             )
@@ -133,7 +126,8 @@ private fun CategoryListScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
-
+    // TODO: Nesting a LazyRow inside of a LazyVerticalGrid seems incorrect,
+    //  should find a different solution.
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier,
@@ -142,13 +136,13 @@ private fun CategoryListScreen(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item(span = { GridItemSpan(maxCurrentLineSpan) },) {
-            RandomMeal(Modifier.fillMaxSize().background(Color.Blue), categories)
+            RandomMeal(randomMeals = categories)
         }
         item {
             Text(
                 text = "Category",
-                style = Typography.bodyLarge,
-                modifier = Modifier.offset(y = -16.dp)
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground,
             )
         }
         item { }
@@ -159,3 +153,4 @@ private fun CategoryListScreen(
         }
     }
 }
+
