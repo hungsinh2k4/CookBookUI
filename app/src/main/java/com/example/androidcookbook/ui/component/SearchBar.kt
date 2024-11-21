@@ -63,6 +63,5 @@ fun SearchBar(onValueChange: (String) -> Unit,navigateBackAction: () -> Unit, se
                 )
             }
         },
-        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     )
 }

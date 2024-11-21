@@ -1,18 +1,17 @@
 package com.example.androidcookbook.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -44,20 +43,21 @@ fun CookbookApp(
     val viewModel: CookbookViewModel = viewModel()
     val categoryViewModel: CategoryViewModel = viewModel(factory = CategoryViewModel.Factory)
     val uiState by viewModel.uiState.collectAsState()
-
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             if (currentScreen != CookbookScreen.Search) {
 
                 CookbookAppBar(showBackButton = uiState.canNavigateBack, searchButtonAction = {
                     navController.navigate(CookbookScreen.Search.name)
-                })
+                }, scrollBehavior = scrollBehavior)
             } else {
                 SearchBar(
                     onValueChange =
                     { updatedSearchQuery -> viewModel.updateSearchQuery(updatedSearchQuery) },
-                    navigateBackAction = {navController.navigateUp()}
-                    ,
+                    navigateBackAction = { navController.navigateUp() },
                     searchQuery = uiState.searchQuery
                 )
             }
