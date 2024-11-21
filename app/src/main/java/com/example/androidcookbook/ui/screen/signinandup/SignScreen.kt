@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,6 +26,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -46,14 +48,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidcookbook.R
+import com.example.androidcookbook.model.signup.RegisterRequest
 import com.example.androidcookbook.ui.component.singinandup.AppLogo
 import com.example.androidcookbook.ui.component.singinandup.ClickableSeparatedText
+import com.example.androidcookbook.ui.component.singinandup.MinimalDialog
 import com.example.androidcookbook.ui.component.singinandup.SignInComponents
 import com.example.androidcookbook.ui.component.singinandup.SignUpComponents
 import com.example.androidcookbook.ui.uistate.SignUiState
@@ -63,7 +69,7 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 fun SignBackground(
     viewModel: SignViewModel,
     isSignIn: Boolean,
-    onSignInClick: () -> Unit
+    isOpenDialog: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -99,18 +105,28 @@ fun SignBackground(
                     SignInCompose(
                         onSignUpClick = {viewModel.ChangeInOrUp(false)},
                         onForgotPasswordClick = {},
-                        onButtonSignInClick = onSignInClick
+                        onButtonSignInClick = { }
                     )
                 } else {
                     SignUpCompose(
                         onSignInClick = {viewModel.ChangeInOrUp(true)},
-                        onButtonSignInClick = onSignInClick
+                        viewModel = viewModel
                     )
                 }
             }
         }
+        if (isOpenDialog) {
+            MinimalDialog(
+                dialogMessage = viewModel.uiState.value.dialogMessage,
+                onDismissRequest = {
+                    viewModel.ChangeOpenDialog(false)
+                }
+            )
+        }
     }
 }
+
+
 
 @Composable
 fun SignInCompose(
@@ -147,12 +163,17 @@ fun SignInCompose(
 @Composable
 fun SignUpCompose(
     onSignInClick: () -> Unit,
-    onButtonSignInClick: () -> Unit
+    viewModel: SignViewModel
 ) {
+    var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repassword by remember { mutableStateOf("") }
     SignUpComponents(
+        email = email,
+        onTypeEmail = {
+            email = it
+        },
         username = username,
         onTypeUsername = {
             username = it
@@ -165,7 +186,11 @@ fun SignUpCompose(
         onRetypePassword = {
             repassword = it
         },
-        onSignInClick = onButtonSignInClick
+        onSignInClick = {
+            if (password == repassword) {
+                viewModel.SignUp(RegisterRequest(username, password, email))
+            }
+        }
     )
 
     ClickableSeparatedText(
@@ -180,7 +205,7 @@ fun SignUpCompose(
 fun SignPreview() {
     var viewModel: SignViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-    SignBackground(viewModel = viewModel, uiState.isSignIn, {})
+    SignBackground(viewModel = viewModel, uiState.isSignIn, uiState.openDialog)
 }
 
 

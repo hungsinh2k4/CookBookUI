@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androidcookbook.ui.component.CookbookAppBar
 import com.example.androidcookbook.ui.CookbookApp
+import com.example.androidcookbook.ui.screen.signinandup.SignPreview
 import com.example.androidcookbook.ui.theme.AndroidCookbookTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,9 +24,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AndroidCookbookTheme {
-                CookbookApp()
+//                CookbookApp()
+                SignPreview()
             }
         }
     }
 }
-
