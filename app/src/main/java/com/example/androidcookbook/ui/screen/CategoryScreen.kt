@@ -1,19 +1,35 @@
 package com.example.androidcookbook.ui.screen
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -26,35 +42,73 @@ import com.example.androidcookbook.R
 import com.example.androidcookbook.model.Category
 import com.example.androidcookbook.ui.theme.Typography
 import com.example.androidcookbook.ui.uistate.CategoryUiState
+import kotlinx.coroutines.delay
 
 
 @Composable
-fun CategoryScreen(modifier:Modifier = Modifier,categoryUiState: CategoryUiState) {
+fun CategoryScreen(modifier: Modifier = Modifier, categoryUiState: CategoryUiState) {
     when (categoryUiState) {
         is CategoryUiState.Loading -> Text("Loading")
-        is CategoryUiState.Success ->
-        {
+        is CategoryUiState.Success -> {
             CategoryListScreen(
                 categories = categoryUiState.categories,
-                modifier = Modifier.fillMaxSize().padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             )
         }
+
         else -> Text("Error")
     }
 }
 
 @Composable
+fun RandomMeal(modifier: Modifier = Modifier, randomMeals: List<Category>) {
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(2000L)
+            val nextIndex = (listState.firstVisibleItemIndex + 1) % randomMeals.size
+            listState.animateScrollToItem(index = nextIndex)
+        }
+    }
+
+    LazyRow(
+        state = listState,
+        modifier = modifier
+    ) {
+        items(items = randomMeals) { randomMeal ->
+
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .width(300.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CategoryCard(
+                    category = randomMeal,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
 fun CategoryCard(category: Category, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(2.dp, Color(0xFFE8D6D2))
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Category",
+                text = category.strCategory,
                 modifier = Modifier
                     .padding(16.dp),
-                style = Typography.titleLarge,
+                style = Typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start
             )
@@ -69,12 +123,6 @@ fun CategoryCard(category: Category, modifier: Modifier = Modifier) {
                 error = painterResource(id = R.drawable.ic_broken_image),
                 placeholder = painterResource(id = R.drawable.loading_img)
             )
-            Text(
-                text = category.strCategoryDescription,
-                style = Typography.titleMedium,
-                textAlign = TextAlign.Justify,
-                modifier = Modifier.padding(16.dp)
-            )
         }
     }
 }
@@ -83,19 +131,30 @@ fun CategoryCard(category: Category, modifier: Modifier = Modifier) {
 private fun CategoryListScreen(
     categories: List<Category>,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
-    LazyColumn(
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = modifier,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        item(span = { GridItemSpan(maxCurrentLineSpan) },) {
+            RandomMeal(Modifier.fillMaxSize().background(Color.Blue), categories)
+        }
+        item {
+            Text(
+                text = "Category",
+                style = Typography.bodyLarge,
+                modifier = Modifier.offset(y = -16.dp)
+            )
+        }
+        item { }
         items(
             items = categories,
-            key = { category ->
-                category.idCategory
-            }
-        ) {  category ->
+        ) { category ->
             CategoryCard(category = category, modifier = Modifier.fillMaxSize())
         }
     }

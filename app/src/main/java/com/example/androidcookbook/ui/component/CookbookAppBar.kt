@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,15 @@ import com.example.androidcookbook.ui.theme.Typography
 fun CookbookAppBar(
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false,
-    searchButtonAction: () -> Unit = {}
+    searchButtonAction: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 ) {
     TopAppBar(
         modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF7F5346)),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFF7F5346),
+            scrolledContainerColor = Color(0xFF7F5346)
+        ),       
         title = {
             Text(
                 text = "Cookbook",
@@ -110,10 +115,12 @@ fun CookbookAppBar(
                 }
             } else null
         },
-        scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+        scrollBehavior = scrollBehavior
     )
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun topAppBarPreview() {

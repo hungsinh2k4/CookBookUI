@@ -21,11 +21,11 @@ val Typography = Typography(
         color = Color.White
     ),
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        fontFamily = FontFamily(Font(R.font.lobster_regular)),
+        fontSize = 36.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp,
+        color = Color.Black
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
