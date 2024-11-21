@@ -10,13 +10,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidcookbook.ui.component.CookbookAppBar
 import com.example.androidcookbook.ui.CookbookApp
 import com.example.androidcookbook.ui.screen.signinandup.SignPreview
 import com.example.androidcookbook.ui.theme.AndroidCookbookTheme
+import com.example.androidcookbook.ui.uistate.SignUiState
+import com.example.androidcookbook.ui.viewmodel.SignViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +30,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             AndroidCookbookTheme {
 //                CookbookApp()
-                SignPreview()
+                val viewModel: SignViewModel = viewModel()
+                val signState: SignUiState by viewModel.uiState.collectAsState()
+                if (!signState.signedIn) {
+                    SignPreview()
+                } else {
+                    CookbookApp()
+                }
+
             }
         }
     }

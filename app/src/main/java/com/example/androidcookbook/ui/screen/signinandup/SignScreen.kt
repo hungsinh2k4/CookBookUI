@@ -56,6 +56,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidcookbook.R
+import com.example.androidcookbook.model.api.SignInRequest
 import com.example.androidcookbook.model.signup.RegisterRequest
 import com.example.androidcookbook.ui.component.singinandup.AppLogo
 import com.example.androidcookbook.ui.component.singinandup.ClickableSeparatedText
@@ -105,7 +106,7 @@ fun SignBackground(
                     SignInCompose(
                         onSignUpClick = {viewModel.ChangeInOrUp(false)},
                         onForgotPasswordClick = {},
-                        onButtonSignInClick = { }
+                        viewModel
                     )
                 } else {
                     SignUpCompose(
@@ -120,6 +121,9 @@ fun SignBackground(
                 dialogMessage = viewModel.uiState.value.dialogMessage,
                 onDismissRequest = {
                     viewModel.ChangeOpenDialog(false)
+                    if (viewModel.uiState.value.signInSuccess) {
+                        viewModel.SignInApp()
+                    }
                 }
             )
         }
@@ -132,7 +136,7 @@ fun SignBackground(
 fun SignInCompose(
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onButtonSignInClick: () -> Unit
+    viewModel: SignViewModel
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -145,7 +149,7 @@ fun SignInCompose(
         onTypePassword = {
             password = it
         },
-        onSignInClick = onButtonSignInClick
+        onSignInClick = { viewModel.SignIn(SignInRequest(username, password)) }
     )
 
     ClickableSeparatedText(
@@ -186,9 +190,12 @@ fun SignUpCompose(
         onRetypePassword = {
             repassword = it
         },
-        onSignInClick = {
+        onSignUpClick = {
             if (password == repassword) {
                 viewModel.SignUp(RegisterRequest(username, password, email))
+            } else {
+                viewModel.ChangeOpenDialog(true)
+                viewModel.ChangeDialogMessage("Retype password not correct")
             }
         }
     )

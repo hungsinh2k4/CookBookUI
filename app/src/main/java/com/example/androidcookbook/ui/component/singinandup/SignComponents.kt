@@ -92,9 +92,10 @@ fun SignInComponents(
 
         InputField(password, onTypePassword, "Password", KeyboardType.Password)
 
-        SignInButton {
-            {}
-        }
+        SignInButton(
+            onClick = onSignInClick,
+            actionText = "Sign In"
+        )
 
     }
 }
@@ -109,7 +110,7 @@ fun SignUpComponents(
     onTypePassword: (String) -> Unit,
     repassword: String,
     onRetypePassword: (String) -> Unit,
-    onSignInClick: () -> Unit
+    onSignUpClick: () -> Unit
 ) {
 
     Column(
@@ -124,7 +125,7 @@ fun SignUpComponents(
 
         InputField(repassword, onRetypePassword, "Repeat your password", KeyboardType.Password)
 
-        SignInButton(onClick = onSignInClick)
+        SignInButton(onClick = onSignUpClick, actionText = "Sign Up")
     }
 }
 
@@ -221,7 +222,8 @@ fun InputField(
 
 @Composable
 fun SignInButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    actionText: String
 ) {
     Button(
         onClick = onClick,
@@ -233,7 +235,7 @@ fun SignInButton(
     ) {
         Row {
             Text(
-                text = "Sign In",
+                text = actionText,
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight(700),

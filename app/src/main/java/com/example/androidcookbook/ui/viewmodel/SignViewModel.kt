@@ -3,6 +3,7 @@ package com.example.androidcookbook.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.androidcookbook.model.api.ApiResponse
+import com.example.androidcookbook.model.api.SignInRequest
 import com.example.androidcookbook.model.signup.RegisterRequest
 import com.example.androidcookbook.model.signup.RegisterResponse
 import com.example.androidcookbook.network.authApi
@@ -44,9 +45,25 @@ class SignViewModel : ViewModel() {
         }
     }
 
+    fun SignInSuccess() {
+        _uiState.update {
+            it.copy(
+                signInSuccess = true
+            )
+        }
+    }
+
+    fun SignInApp() {
+        _uiState.update {
+            it.copy(
+                signedIn = true
+            )
+        }
+    }
+
     fun SignUp(req: RegisterRequest) {
-        authApi.register(req).enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+        authApi.register(req).enqueue(object : Callback<RegisterResponse> {
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                 ChangeOpenDialog(true)
                 if (response.isSuccessful) {
                     // Trường hợp đăng ký thành công
@@ -75,10 +92,46 @@ class SignViewModel : ViewModel() {
                 }
             }
 
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                Log.e("Register", "Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun SignIn(req: SignInRequest) {
+        authApi.signin(req).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                ChangeOpenDialog(true)
+                if (response.isSuccessful) {
+                    // Trường hợp đăng ký thành công
+                    val registerResponse = response.body()
+                    Log.d("Register", "Success: ${registerResponse?.message}")
+                    SignInSuccess()
+                    ChangeDialogMessage(registerResponse?.message.toString())
+                } else {
+                    // Trường hợp lỗi (400, 500, etc.)
+                    val errorBody = response.errorBody()?.string()
+                    try {
+                        // Chuyển đổi errorBody thành `RegisterResponse`
+                        val gson = Gson()
+                        val errorResponse = gson.fromJson(errorBody, ApiResponse::class.java)
+                        val message = when (val msg = errorResponse.message) {
+                            is String -> msg
+                            is List<*> -> msg.joinToString(", ")
+                            else -> "Unknown message format"
+                        }
+                        Log.e("Register", "Error: $message")
+                        ChangeDialogMessage(message)
+                    } catch (e: Exception) {
+                        Log.e("Register", "Unknown Error: ${e.message}")
+                        ChangeDialogMessage(e.message.toString())
+                    }
+                }
+            }
+
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 Log.e("Register", "Failure: ${t.message}")
             }
         })
-
     }
 }
