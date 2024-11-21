@@ -11,24 +11,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.androidcookbook.ui.component.CookbookAppBar
-import com.example.androidcookbook.ui.component.CookbookBottomNavigationBar
-import com.example.androidcookbook.ui.component.SearchBar
-import com.example.androidcookbook.ui.screen.AIChatScreen
-import com.example.androidcookbook.ui.screen.CategoryScreen
-import com.example.androidcookbook.ui.screen.CreatePostScreen
-import com.example.androidcookbook.ui.screen.NewsfeedScreen
-import com.example.androidcookbook.ui.screen.SearchScreen
-import com.example.androidcookbook.ui.screen.UserProfileScreen
-import com.example.androidcookbook.ui.screen.CookbookScreens
-import com.example.androidcookbook.ui.viewmodel.CategoryViewModel
-import com.example.androidcookbook.ui.viewmodel.CookbookViewModel
+import com.example.androidcookbook.ui.common.appbars.CookbookAppBarDefault
+import com.example.androidcookbook.ui.common.appbars.CookbookBottomNavigationBar
+import com.example.androidcookbook.ui.features.post.CreatePostScreen
+import com.example.androidcookbook.ui.features.search.SearchBar
+import com.example.androidcookbook.ui.features.search.SearchScreen
+import com.example.androidcookbook.ui.features.search.SearchViewModel
+import com.example.androidcookbook.ui.nav.Routes
+import com.example.androidcookbook.ui.nav.graphs.appScreens
+import com.example.androidcookbook.ui.nav.graphs.authScreens
+import com.example.androidcookbook.ui.nav.utils.navigateIfNotOn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,38 +37,26 @@ fun CookbookApp(
     navController: NavHostController = rememberNavController(),
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-
-    val currentScreen = CookbookScreens.valueOf(
-        backStackEntry?.destination?.route ?: CookbookScreens.Category.name
-    )
+    val currentDestination = backStackEntry?.destination
 
     val viewModel: CookbookViewModel = viewModel()
-    val categoryViewModel: CategoryViewModel = viewModel(factory = CategoryViewModel.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            if (!currentScreen.hasTopBar) {
-                return@Scaffold
-            }
-            if (currentScreen == CookbookScreens.Search) {
-                SearchBar(
-                    onValueChange = { updatedSearchQuery ->
-                        viewModel.updateSearchQuery(updatedSearchQuery)
-                    },
-                    navigateBackAction = { navController.navigateUp() },
-                    searchQuery = uiState.searchQuery
-                )
-            } else {
-                CookbookAppBar(
+            when (uiState.topBarState) {
+                is CookbookUiState.TopBarState.NoTopBar -> {}
+                is CookbookUiState.TopBarState.Custom -> (uiState.topBarState as CookbookUiState.TopBarState.Custom).topAppBar()
+                is CookbookUiState.TopBarState.Default -> CookbookAppBarDefault(
                     showBackButton = uiState.canNavigateBack,
                     searchButtonAction = {
-                        navController.navigate(CookbookScreens.Search.name)
+                        navController.navigate(Routes.Search)
                     },
                     onCreatePostClick = {
-                        navController.navigate(CookbookScreens.CreatePost.name)
+                        navController.navigateIfNotOn(Routes.CreatePost)
                         viewModel.updateCanNavigateBack(true)
                     },
                     onMenuButtonClick = {
@@ -80,75 +68,74 @@ fun CookbookApp(
                     },
                     scrollBehavior = scrollBehavior
                 )
+
             }
         },
         bottomBar = {
-            if (!currentScreen.hasBottomBar) {
-                return@Scaffold
+            when (uiState.bottomBarState) {
+                is CookbookUiState.BottomBarState.NoBottomBar -> {}
+                is CookbookUiState.BottomBarState.Default -> CookbookBottomNavigationBar(
+                    onHomeClick = {
+                        navController.navigateIfNotOn(Routes.App.Category)
+                    },
+                    onChatClick = {
+                        navController.navigateIfNotOn(Routes.App.AIChat)
+                    },
+                    onNewsfeedClick = {
+                        navController.navigateIfNotOn(Routes.App.Newsfeed)
+                    },
+                    onUserProfileClick = {
+                        navController.navigateIfNotOn(Routes.App.UserProfile(0)) // TODO: UserId logic
+                    },
+                    currentDestination = currentDestination
+                )
             }
-            CookbookBottomNavigationBar(
-                onHomeClick = {
-                    if (currentScreen != CookbookScreens.Category) {
-                        navController.navigate(route = CookbookScreens.Category.name)
-                    }
-                },
-                onChatClick = {
-                    if (currentScreen != CookbookScreens.AIChat) {
-                        navController.navigate(route = CookbookScreens.AIChat.name)
-                    }
-                },
-                onNewsfeedClick = {
-                    if (currentScreen != CookbookScreens.Newsfeed) {
-                        navController.navigate(route = CookbookScreens.Newsfeed.name)
-                    }
-                },
-                onUserProfileClick = {
-                    if (currentScreen != CookbookScreens.UserProfile) {
-                        navController.navigate(route = CookbookScreens.UserProfile.name)
-                    }
-                }
-            )
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = CookbookScreens.Category.name,
+            startDestination = Routes.Auth,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            composable(route = CookbookScreens.Login.name) {
-                // TODO: add SignInScreen
-            }
-            composable(route = CookbookScreens.Category.name) {
-                CategoryScreen(categoryUiState = categoryViewModel.categoryUiState)
-            }
-            composable(route = CookbookScreens.Search.name) {
+            authScreens(navController = navController, updateAppBar = {
+                viewModel.updateTopBarState(CookbookUiState.TopBarState.NoTopBar)
+                viewModel.updateBottomBarState(CookbookUiState.BottomBarState.NoBottomBar)
+            })
+            appScreens(navController = navController, updateAppBar = {
+                viewModel.updateTopBarState(CookbookUiState.TopBarState.Default)
+                viewModel.updateBottomBarState(CookbookUiState.BottomBarState.Default)
+            })
+            composable<Routes.Search> { entry ->
+                val searchViewModel = hiltViewModel<SearchViewModel>()
+                val searchUiState = searchViewModel.uiState.collectAsState().value
+
+                viewModel.updateTopBarState(CookbookUiState.TopBarState.Custom {
+                    SearchBar(
+                        onSearch = { searchViewModel.search(it) },
+                        navigateBackAction = {
+                            navController.popBackStack()
+                        },
+                    )
+                })
+                viewModel.updateBottomBarState(CookbookUiState.BottomBarState.NoBottomBar)
+
                 SearchScreen(
-                    result = uiState.searchQuery,
+                    result = searchUiState.result,
                     onBackButtonClick = {
                         navController.navigateUp()
-                        viewModel.updateCanNavigateBack(false)
                     }
                 )
             }
-            composable(route = CookbookScreens.AIChat.name) {
-                AIChatScreen()
-            }
-            composable(route = CookbookScreens.Newsfeed.name) {
-                NewsfeedScreen()
-            }
-            composable(route = CookbookScreens.UserProfile.name) {
-                UserProfileScreen()
-            }
-            composable(route = CookbookScreens.CreatePost.name) {
+            composable<Routes.CreatePost> {
+                viewModel.updateBottomBarState(CookbookUiState.BottomBarState.NoBottomBar)
                 CreatePostScreen(
                     onPostButtonClick = {
                         //TODO: Connect to database
                     },
                     onBackButtonClick = {
                         navController.navigateUp()
-                        viewModel.updateCanNavigateBack(false)
                     },
                 )
             }
@@ -156,8 +143,16 @@ fun CookbookApp(
     }
 }
 
+fun NavGraphBuilder.searchScreen(
+    navController: NavHostController,
+    updateAppBar: () -> Unit,
+) {
+
+}
+
 @Preview
 @Composable
 fun CookbookAppPreview() {
     CookbookApp()
 }
+

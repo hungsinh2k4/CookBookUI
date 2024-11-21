@@ -1,13 +1,7 @@
 package com.example.androidcookbook
 
 import android.app.Application
-import com.example.androidcookbook.data.AppContainer
-import com.example.androidcookbook.data.DefaultAppContainer
+import dagger.hilt.android.HiltAndroidApp
 
-class CookbookApplication: Application() {
-    lateinit var container: AppContainer
-    override fun onCreate() {
-        super.onCreate()
-        container = DefaultAppContainer()
-    }
-}
+@HiltAndroidApp
+class CookbookApplication: Application()
