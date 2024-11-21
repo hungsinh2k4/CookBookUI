@@ -20,13 +20,19 @@ val Typography = Typography(
         letterSpacing = 0.5.sp,
         color = Color.White
     ),
-    bodyLarge = TextStyle(
+//    bodyLarge = TextStyle(
+//        fontFamily = FontFamily(Font(R.font.lobster_regular)),
+//        fontSize = 36.sp,
+//        lineHeight = 16.sp,
+//        letterSpacing = 0.5.sp
+//    ),
+    headlineMedium = TextStyle(
         fontFamily = FontFamily(Font(R.font.lobster_regular)),
         fontSize = 36.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
-        color = Color.Black
-    )
+        letterSpacing = 0.5.sp
+    ),
+
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
