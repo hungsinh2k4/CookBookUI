@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -67,6 +69,7 @@ fun SignBackground(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xFF251404))
+            .verticalScroll(rememberScrollState())
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawOval(
