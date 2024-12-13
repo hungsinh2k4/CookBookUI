@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.9.3"
-agp = "8.6.1"
+agp = "8.6.0"
 coilCompose = "2.0.0"
 converterGson = "2.9.0"
 espressoIntents = "3.6.1"
@@ -19,6 +19,7 @@ navigationCompose = "2.8.4"
 retrofit = "2.11.0"
 sandwichRetrofit = "2.0.10"
 uiTestAndroid = "1.7.5"
+firebaseMessaging = "24.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ mockk-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk"
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 sandwich-retrofit = { module = "com.github.skydoves:sandwich-retrofit", version.ref = "sandwichRetrofit" }
 sandwich-retrofit-serialization = { module = "com.github.skydoves:sandwich-retrofit-serialization", version.ref = "sandwichRetrofit" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

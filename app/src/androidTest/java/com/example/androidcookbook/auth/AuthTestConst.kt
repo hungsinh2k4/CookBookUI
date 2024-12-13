@@ -1,6 +1,7 @@
 package com.example.androidcookbook.auth
 
 object AuthTestConst {
+    const val USER_ID = 1
     const val USERNAME = "username"
     const val PASSWORD = "password"
 

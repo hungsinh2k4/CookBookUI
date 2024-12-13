@@ -2,6 +2,7 @@ package com.example.androidcookbook.ui.features.auth.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +20,7 @@ fun ClickableSeparatedText(
     Row {
         Text(
             text = unclickableText,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontWeight = FontWeight(600)
         )
         ClickableText(
@@ -40,7 +41,7 @@ fun ClickableText(
             onClick()
         },
         text = clickableText,
-        color = Color(134, 147, 95),
+        color = MaterialTheme.colorScheme.tertiary,
         fontWeight = FontWeight(600)
     )
 }

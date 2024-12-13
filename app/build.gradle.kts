@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization")
     alias(libs.plugins.compose.compiler)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -13,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.androidcookbook"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -38,8 +41,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
@@ -72,12 +77,21 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.kotlinx.serialization.json)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation("com.airbnb.android:lottie-compose:6.5.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.firebase.messaging)
+
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation (libs.androidx.navigation.testing)
+
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -103,7 +117,17 @@ dependencies {
 
     // Kotlin serialization
     implementation(libs.kotlinx.serialization.json)
-    implementation(kotlin("script-runtime"))
+
+    //Icon extended
+    implementation(libs.androidx.material.icons.extended)
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    // messaging
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    // notification permission
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 }
 
 // Allow references to generated code

@@ -8,7 +8,7 @@ data class ErrorBody(
     val timestamp: String,
     val path: String,
     @Serializable (with = MessageSerializer::class)
-    val message: List<String>,
+    val message: List<String> = listOf("Error"),
     val error: String,
 )
 
