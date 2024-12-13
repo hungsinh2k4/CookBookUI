@@ -5,3 +5,8 @@ data class AuthUiState(
     val dialogMessage: String = "",
     val signInSuccess: Boolean = false,
 )
+
+sealed interface AuthRequestState {
+    data object Idle : AuthRequestState
+    data object Loading : AuthRequestState
+}

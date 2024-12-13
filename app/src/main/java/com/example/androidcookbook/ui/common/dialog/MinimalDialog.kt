@@ -1,8 +1,10 @@
 package com.example.androidcookbook.ui.common.dialog
 
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +27,8 @@ fun MinimalDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .heightIn(min = 250.dp)
+                .height(IntrinsicSize.Min)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -33,7 +36,8 @@ fun MinimalDialog(
                 text = dialogMessage,
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
+                    .wrapContentSize(Alignment.Center)
+                    .padding(8.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 25.sp
             )

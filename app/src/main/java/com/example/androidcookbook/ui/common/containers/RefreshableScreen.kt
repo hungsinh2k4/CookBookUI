@@ -13,20 +13,18 @@ import androidx.compose.ui.Modifier
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun RefreshableScreen(
+    isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val refreshState = rememberPullToRefreshState()
-    var isRefreshing by remember { mutableStateOf(false) }
 
     PullToRefreshBox(
         state = refreshState,
         isRefreshing = isRefreshing,
         onRefresh = {
-            isRefreshing = true
             onRefresh()
-            isRefreshing = false
         },
         modifier = modifier,
     ) {

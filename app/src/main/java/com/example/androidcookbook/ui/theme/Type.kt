@@ -11,7 +11,7 @@ import com.example.androidcookbook.R
 // Set of Material typography styles to start with
 val Typography = Typography(
     titleLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.lobster_regular)),
+        fontFamily = FontFamily(Font(R.font.lobstertwo_regular)),
         fontSize = 36.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,

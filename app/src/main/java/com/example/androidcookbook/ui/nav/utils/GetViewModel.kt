@@ -8,7 +8,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 
 @Composable
-inline fun <reified VM : ViewModel> getViewModel(
+inline fun <reified VM : ViewModel> sharedViewModel(
     backStackEntry: NavBackStackEntry,
     navController: NavController,
     route: Any,
@@ -17,4 +17,20 @@ inline fun <reified VM : ViewModel> getViewModel(
         navController.getBackStackEntry(route)
     }
     return hiltViewModel<VM>(parentEntry)
+}
+
+@Composable
+inline fun <reified VM : ViewModel, reified VMF> sharedViewModel(
+    backStackEntry: NavBackStackEntry,
+    navController: NavController,
+    route: Any,
+    noinline creationCallback: (VMF) -> VM
+): VM {
+    val parentEntry = remember(backStackEntry) {
+        navController.getBackStackEntry(route)
+    }
+    return hiltViewModel<VM, VMF>(
+        viewModelStoreOwner = parentEntry,
+        creationCallback = creationCallback
+    )
 }

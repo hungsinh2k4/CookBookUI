@@ -9,4 +9,6 @@ class SearchRepository @Inject constructor(
     private val searchService: SearchService
 ) {
     suspend fun search(searchQuery: String): ApiResponse<RecipeList?> = searchService.search(searchQuery)
+
+    suspend fun getMealById(id: Int) = searchService.getMealById(id)
 }
